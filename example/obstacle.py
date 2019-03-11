@@ -8,7 +8,7 @@ class Obstacle:
 
     def __init__(self, root):
 
-        self.player = Frame(root, width=25, height=50, bg='red')
+        self.player = Frame(root, width=25, height=500, bg='red')
 
     def physics(self):
         self.player.place(x=self.pos_x, y=self.pos_y)
@@ -20,4 +20,5 @@ class Obstacle:
 
     def reset(self):
         self.pos_x = 520
-        self.vel_x = random.randrange(-8, -4)
+        self.pos_y = random.randrange(200, 350)
+        self.vel_x = random.randrange(-10, -4)

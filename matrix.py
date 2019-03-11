@@ -1,4 +1,5 @@
-from random import randrange
+import random
+import copy
 
 class Matrix:
 
@@ -33,7 +34,7 @@ class Matrix:
         return array
 
     @staticmethod
-    def transpose(matrix):
+    def transpose_matrix(matrix):
         
         result = Matrix(matrix.columns, matrix.rows)
 
@@ -42,34 +43,33 @@ class Matrix:
                 result.data[column][row] = matrix.data[row][column]
 
         return result
-        
-        
+
     def randomize(self):
         for row in range(self.rows):
             for column in range(self.columns):
-                self.data[row][column] = randrange(-10, 10) / 10
+                self.data[row][column] = random.uniform(-1, 1) * 2 - 1
     
     @staticmethod
-    def multiply(a, b):
+    def multiply_matrix(a, b):
         
         result = Matrix(a.rows, b.columns)
 
         for row in range(result.rows):
             for column in range(result.columns):
 
-                sum = 0
+                addition = 0
                 for s in range(a.columns):
-                    sum += a.data[row][s] * b.data[s][column]
+                    addition += a.data[row][s] * b.data[s][column]
 
-                result.data[row][column] = sum
+                result.data[row][column] = addition
                     
         return result
         
-    def multiply_self(self, n):
+    def multiply(self, n):
         
         for row in range(self.rows):
             for column in range(self.columns):
-                self.data[row][column]*= n
+                self.data[row][column] *= n
 
     def map(self, func):
         for row in range(self.rows):
@@ -77,6 +77,7 @@ class Matrix:
                 val = self.data[row][column]
                 self.data[row][column] = func(val)
 
+    @staticmethod
     def map_matrix(matrix, func):
         for row in range(matrix.rows):
             for column in range(matrix.columns):
@@ -90,11 +91,11 @@ class Matrix:
         if type(n) is Matrix:
             for row in range(self.rows):
                 for column in range(self.columns):
-                    self.data[row][column]+= n.data[row][column]
+                    self.data[row][column] += n.data[row][column]
         else:
             for row in range(self.rows):
                 for column in range(self.columns):
-                    self.data[row][column]+= n
+                    self.data[row][column] += n
     
     @staticmethod
     def add_matrix(a, b):
@@ -108,7 +109,7 @@ class Matrix:
         return result
     
     @staticmethod
-    def subtract(a, b):
+    def subtract_matrix(a, b):
         
         result = Matrix(a.rows, a.columns)
 
@@ -117,7 +118,12 @@ class Matrix:
                 result.data[row][column] = a.data[row][column] - b.data[row][column]
                     
         return result
-    
+
+    def copy(self):
+
+        new_matrix = Matrix(self.rows, self.columns)
+        new_matrix.data = copy.deepcopy(self.data)
+        return new_matrix
 
     def print(self):
         print(self.data)

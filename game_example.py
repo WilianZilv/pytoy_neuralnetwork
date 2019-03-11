@@ -1,7 +1,8 @@
 from tkinter import *
-from player import Player
-from obstacle import Obstacle
-
+from example.player import Player
+from example.obstacle import Obstacle
+import random
+from neuralnetwork import NeuralNetwork
 
 class Main:
 
@@ -13,14 +14,15 @@ class Main:
         self.txt_generation = 0
         self.g_label = Label(self.root, text='Generation: 0')
         self.f_label = Label(self.root, text='Best fitness: 0')
+        self.p_label = Label(self.root, text='Population: 0')
 
         self.g_label.grid(row=0, column=0)
         self.f_label.grid(row=1, column=0)
-
-        Button(self.root, text='Force Next Generation', command=self.force_next_generation).place(x=200, y=0)
+        self.p_label.grid(row=2, column=0)
 
         self.obstacle = Obstacle(self.root)
 
+        self.best = None
         self.players = []
         self.next_generation(None)
 
@@ -32,11 +34,15 @@ class Main:
 
         all_dead = True
 
+        population = 0
         for p in self.players:
             p.physics()
-
+            
             if p.dead is False:
+                population += 1
                 all_dead = False
+
+        self.update_population(population)
 
         if all_dead is True:
             self.next_generation(self.best_player().brain)
@@ -45,9 +51,6 @@ class Main:
         self.obstacle.physics()
 
         self.root.after(16, self.fixed_update)
-
-    def force_next_generation(self):
-        self.next_generation(self.best_player().brain)
 
     def next_generation(self, brain):
 
@@ -60,10 +63,23 @@ class Main:
 
         self.players = []
 
-        for i in range(250):
-            player = Player(self.root, brain, self.obstacle)
-            player.brain.mutate()
+        for i in range(50):
+
+            new_brain = NeuralNetwork(4, 6, 1)
+
+            if brain is not None:
+                new_brain = NeuralNetwork.copy_from(brain)
+
+            player = Player(self.root, new_brain, self.obstacle)
+            new_brain.mutate()
             self.players.append(player)
+
+            print('\nBrain Clone:')
+            print(f'W_IH: {new_brain.weights_ih.data}')
+            print(f'W_HO: {new_brain.weights_ho.data}')
+            print(f'B_H: {new_brain.bias_h.data}')
+            print(f'B_O: {new_brain.bias_o.data}')
+
 
         self.obstacle.reset()
 
@@ -73,9 +89,17 @@ class Main:
             if p.get_fitness() > best.get_fitness():
                 best = p
 
-        self.f_label.config(text=f'Best fitness: {best.get_fitness()}')
+        if self.best is None:
+            self.best = best
+
+        if best.get_fitness() > self.best.get_fitness():
+            self.best = best
+
+        self.f_label.config(text=f'Best fitness: {self.best.get_fitness()}')
 
         return best
 
+    def update_population(self, amt):
+        self.p_label.config(text=f'Population: {amt}')
 
 Main()
