@@ -2,14 +2,14 @@ from tkinter import *
 import random
 
 
-class Obstacle:
+class Coin:
     pos_x = 520
     pos_y = 350
     vel_x = -5
 
     def __init__(self, root):
 
-        self.player = Frame(root, width=25, height=500, bg='red')
+        self.player = Frame(root, width=20, height=20, bg='yellow')
 
     def physics(self):
         self.player.place(x=self.pos_x, y=self.pos_y)
@@ -21,5 +21,5 @@ class Obstacle:
 
     def reset(self):
         self.pos_x = 520
-        self.pos_y = random.randrange(250, 350)
-        self.vel_x = random.randrange(-6, -2)
+        self.pos_y = random.randrange(50, 350)
+        self.vel_x = random.randrange(-8, -5)

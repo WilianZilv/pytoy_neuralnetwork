@@ -84,7 +84,7 @@ class NeuralNetwork:
 
         def func(x):
 
-            if random.gauss(0, 1) >= 0:
+            if random.random() > 0.1:
                 offset = random.gauss(0, 1) * .5
                 new_x = x + offset
                 return new_x

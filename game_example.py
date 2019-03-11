@@ -1,6 +1,7 @@
 from tkinter import *
 from example.player import Player
 from example.obstacle import Obstacle
+from example.coin import Coin
 import random
 from neuralnetwork import NeuralNetwork
 
@@ -20,7 +21,10 @@ class Main:
         self.f_label.grid(row=1, column=0)
         self.p_label.grid(row=2, column=0)
 
+        Button(text='Next Generation', command=self.force_next_generation).grid(row=0, column=2)
+
         self.obstacle = Obstacle(self.root)
+        self.coin = Coin(self.root)
 
         self.best = None
         self.players = []
@@ -49,8 +53,12 @@ class Main:
             self.obstacle.reset()
 
         self.obstacle.physics()
+        self.coin.physics()
 
         self.root.after(16, self.fixed_update)
+
+    def force_next_generation(self):
+        self.next_generation(self.best_player().brain)
 
     def next_generation(self, brain):
 
@@ -63,14 +71,14 @@ class Main:
 
         self.players = []
 
-        for i in range(50):
+        for i in range(150):
 
-            new_brain = NeuralNetwork(4, 6, 1)
+            new_brain = NeuralNetwork(8, 3, 1)
 
             if brain is not None:
                 new_brain = NeuralNetwork.copy_from(brain)
 
-            player = Player(self.root, new_brain, self.obstacle)
+            player = Player(self.root, new_brain, self.obstacle, self.coin)
             new_brain.mutate()
             self.players.append(player)
 
@@ -80,7 +88,7 @@ class Main:
             print(f'B_H: {new_brain.bias_h.data}')
             print(f'B_O: {new_brain.bias_o.data}')
 
-
+        self.coin.reset()
         self.obstacle.reset()
 
     def best_player(self):
